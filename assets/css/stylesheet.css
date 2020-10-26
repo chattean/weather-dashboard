@@ -1,0 +1,22 @@
+h1{
+    text-align: center;
+    background-color: darkgray;
+}
+#todays-forecast {
+    padding-top:10px;
+    padding-bottom:10px;
+}
+#todays-forecast h2 {
+    display: inline;
+}
+.search-container{
+    margin-right: 10%;
+    padding-top:10px;
+}
+
+.card-body{
+    background-color: rgb(6, 85, 255);
+    /* margin:1%; */
+    color:white;
+    border: whitesmoke 1px solid;
+}
