@@ -1,32 +1,38 @@
 // If there is nothing in 'localStorage', sets the 'list' to an empty array
-var searchListArray = JSON.parse(localStorage.getItem('searchlist')) || [];
+var searchListArray = JSON.parse(localStorage.getItem('searchlist')).slice(-10) || [];
 renderSearch(searchListArray);
+
 // redering search History 
 function renderSearch(searchListArray) {
 
-    var searchHistory = document.querySelector('#search-history');
+    var searchHistory = $('#search-history');
+    $('#search-history').empty();
+    var searchListArray = JSON.parse(localStorage.getItem('searchlist')).slice(-10) || [];
+
     //Creating a UL element 
     var searchHistoryUL = document.createElement('ul');
     searchHistoryUL.setAttribute('class', 'list-group');        //Bootstrap Styling
 
     for (var i = 0; i < searchListArray.length; i++) {
         var searchHistoryLI = document.createElement('li');
-        searchHistoryLI.setAttribute('class', 'list-group-item');    //Bootstrap Styling
-        searchHistoryLI.setAttribute('id', 'search-list');
-        searchHistoryLI.append(searchListArray[i]);                 // making a list of cities searched
+        searchHistoryLI.setAttribute('class', 'list-group-item search-list');    //Bootstrap Styling
+        searchHistoryLI.append(searchListArray[i]);                 // making a list of cities searches
         searchHistoryUL.appendChild(searchHistoryLI);
     };
-    searchHistory.appendChild(searchHistoryUL);
+    searchHistory.append(searchHistoryUL);
+
 }
 
-console.log(searchListArray);
 
 function myFunction() {
     var citySearch = document.querySelector('#citySearch').value;
-    console.log(citySearch);
+    renderweather(citySearch);
+
+}
+function renderweather(citySearch){    
     //fectching the open weather API
     fetch(
-        'https://api.openweathermap.org/data/2.5/weather?q=' + citySearch + ',&units=imperial&APPID=39b0a25dae6521c5e83d59fd95abf165'
+        'https://api.openweathermap.org/data/2.5/weather?q=' + citySearch + '&units=imperial&appid=39b0a25dae6521c5e83d59fd95abf165'
     )
         .then(function (weatherResponse) {
             return weatherResponse.json();
@@ -34,10 +40,27 @@ function myFunction() {
         .then(function (weatherResponse) {
             // a variable to hold the wether data that we need
             var cityName = weatherResponse.name;
+            var countryName = weatherResponse.sys.country
 
             // Populating the search History
-            searchListArray.push(cityName);
-            localStorage.setItem('searchlist', JSON.stringify(searchListArray));
+            if ((cityName ==undefined || cityName == null || cityName == "") || (countryName ==undefined || countryName == null || countryName == "")){
+                $('#error-msg').empty();
+                var errorMsg = $('#error-msg')
+                var displayError = document.createElement('p');
+                displayError.setAttribute('style','color:red');
+                displayError.innerHTML = "Your Entry is invalid or there might be one or more cities, Please enter state or country (i.e. city,state or country)";
+                errorMsg.append(displayError);
+            }else{
+                var fullCityName = cityName+","+countryName;
+                searchListArray.push(fullCityName);
+                searchListArray = [...new Set(searchListArray)];
+                // searcgListArray = searchListArray.slice(0,10);
+                localStorage.setItem('searchlist', JSON.stringify(searchListArray));
+                $('#error-msg').empty();
+            }
+            
+
+            renderSearch(searchListArray) 
 
 
             var currentTemp = weatherResponse.main.temp;
@@ -92,7 +115,23 @@ function myFunction() {
             var todaysForecast = document.querySelector('#todays-forecast');
             var currentUvIndex = UvResponse.value;
             var displayUvIndex = document.createElement('p');
-            displayUvIndex.innerHTML = 'UV Index: ' + currentUvIndex;
+            var uvIndexSpan = document.createElement('span')
+            uvIndexSpan.innerHTML = currentUvIndex;
+
+            if (parseInt(currentUvIndex) <= 3){
+                uvIndexSpan.setAttribute('class','low');
+            }else if(parseInt(currentUvIndex) >3 && currentUvIndex <= 6){
+                uvIndexSpan.setAttribute('class','moderate');
+            }else if(parseInt(currentUvIndex) >6 && currentUvIndex <= 8){
+                uvIndexSpan.setAttribute('class','high');
+            }else if(parseInt(currentUvIndex) >8 && currentUvIndex <= 10){
+                uvIndexSpan.setAttribute('class','veryHigh')
+            }else{
+                uvIndexSpan.setAttribute('class','extreme');
+            }
+
+            displayUvIndex.innerHTML = 'UV Index: ';
+            displayUvIndex.append(uvIndexSpan);
             todaysForecast.appendChild(displayUvIndex);
             var currentLon = UvResponse.lon;
             var currentLat = UvResponse.lat;
@@ -161,9 +200,11 @@ function myFunction() {
 
         });
 }
-$('#search-list').each(function(){
-    $(this).on('click', function(event){
-        var city = $(this).value;
-        console.log(city);
-    });
+
+
+$(document).on('click', '.search-list', function(){
+    // This is to get the city text
+    var city = $(this).text();
+    console.log(city);
+    renderweather(city);
 });
