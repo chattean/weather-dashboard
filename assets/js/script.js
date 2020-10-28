@@ -23,11 +23,12 @@ function renderSearch(searchListArray) {
 
 }
 
-
+// Main funtion being called via click on the button
 function myFunction() {
     var citySearch = document.querySelector('#citySearch').value;
     renderweather(citySearch);
 
+// This is how we get weather information
 }
 function renderweather(citySearch){    
     //fectching the open weather API
@@ -54,7 +55,6 @@ function renderweather(citySearch){
                 var fullCityName = cityName+","+countryName;
                 searchListArray.push(fullCityName);
                 searchListArray = [...new Set(searchListArray)];
-                // searcgListArray = searchListArray.slice(0,10);
                 localStorage.setItem('searchlist', JSON.stringify(searchListArray));
                 $('#error-msg').empty();
             }
@@ -117,7 +117,7 @@ function renderweather(citySearch){
             var displayUvIndex = document.createElement('p');
             var uvIndexSpan = document.createElement('span')
             uvIndexSpan.innerHTML = currentUvIndex;
-
+            // adjusting the background of the current UV index
             if (parseInt(currentUvIndex) <= 3){
                 uvIndexSpan.setAttribute('class','low');
             }else if(parseInt(currentUvIndex) >3 && currentUvIndex <= 6){
@@ -149,15 +149,11 @@ function renderweather(citySearch){
                     futureForecast.appendChild(futureTitle);
                     var forecastCardContainer = document.createElement('div');
                     forecastCardContainer.setAttribute('class', 'card container');
-                    // forecastCardContainer.setAttribute('class', 'cointainer');
                     var forecastCardrow = document.createElement('div');
                     forecastCardrow.setAttribute('class', 'row justify-content-center');
-                    // forecastCardContainer.append(forecastCardrow);
-                    // futureForecast.appendChild(forecastCardContainer);
                     for (var i = 0; i < 5; i++) {
                         var forecastCard = document.createElement('div');
                         forecastCard.setAttribute('class','card-body col-sm-2.5')
-                        // forecastCard.setAttribute('class','col')
                         var cardTitle =document.createElement('h5');
                         cardTitle.setAttribute('class', 'card-title');
 
@@ -175,7 +171,6 @@ function renderweather(citySearch){
                         var forecastWeatherIcon = document.createElement('img');
                         forecastWeatherIcon.setAttribute('src', 'https://openweathermap.org/img/wn/' + forecastResponse.list[8 * i].weather[0].icon + '.png')
                         var iconParagraph = document.createElement('p');
-                        // iconParagraph.setAttribute('class', 'card-text')
                         iconParagraph.append(forecastWeatherIcon)
 
                         //Forecast Temp
@@ -183,7 +178,6 @@ function renderweather(citySearch){
                         var tempParagraph = document.createElement('p');
                         tempParagraph.setAttribute('class','card-text');
                         tempParagraph.innerHTML = 'Temp: ' + forecastTemp + ' °F';
-                        // tempParagraph.append(forecastTemp);
 
                         //Forecast Humidity
                         var forecastHumidity = forecastResponse.list[8 * i].main.humidity;
@@ -201,6 +195,7 @@ function renderweather(citySearch){
         });
 }
 
+//event listener for clicking on search list
 
 $(document).on('click', '.search-list', function(){
     // This is to get the city text
