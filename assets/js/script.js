@@ -1,5 +1,6 @@
 // If there is nothing in 'localStorage', sets the 'list' to an empty array
-var searchListArray = JSON.parse(localStorage.getItem('searchlist')).slice(-10) || [];
+var searchListArray = JSON.parse(localStorage.getItem('searchlist')) || [];
+
 renderSearch(searchListArray);
 
 // redering search History 
@@ -7,7 +8,6 @@ function renderSearch(searchListArray) {
 
     var searchHistory = $('#search-history');
     $('#search-history').empty();
-    var searchListArray = JSON.parse(localStorage.getItem('searchlist')).slice(-10) || [];
 
     //Creating a UL element 
     var searchHistoryUL = document.createElement('ul');
@@ -18,8 +18,13 @@ function renderSearch(searchListArray) {
         searchHistoryLI.setAttribute('class', 'list-group-item search-list');    //Bootstrap Styling
         searchHistoryLI.append(searchListArray[i]);                 // making a list of cities searches
         searchHistoryUL.appendChild(searchHistoryLI);
+        if (i >= 10){
+            searchListArray.shift()
+        }
     };
     searchHistory.append(searchHistoryUL);
+
+
 
 }
 
@@ -58,11 +63,9 @@ function renderweather(citySearch){
                 localStorage.setItem('searchlist', JSON.stringify(searchListArray));
                 $('#error-msg').empty();
             }
-            
-
+            //rendering search history
             renderSearch(searchListArray) 
-
-
+            // getting all the variables
             var currentTemp = weatherResponse.main.temp;
             var currentWeatherIconID = weatherResponse.weather[0].icon;
             var currentHumidity = weatherResponse.main.humidity;
@@ -203,3 +206,5 @@ $(document).on('click', '.search-list', function(){
     console.log(city);
     renderweather(city);
 });
+
+$(document)
